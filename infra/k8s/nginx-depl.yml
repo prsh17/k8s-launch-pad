@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-api-deployment
+  labels:
+    app: nginx-api
+spec:
+  replicas: 1 # You can adjust the number of replicas as needed
+  selector:
+    matchLabels:
+      app: nginx-api
+  template:
+    metadata:
+      labels:
+        app: nginx-api
+    spec:
+      containers:
+      - name: nginx-api-container
+        image: nginx:latest # Use a specific version like nginx:1.25.3 for production
+        ports:
+        - containerPort: 80 # NGINX default HTTP port
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-api-service
+spec:
+  type: NodePort # Exposes the service on a static port on each Node's IP
+  selector:
+    app: nginx-api # Selects Pods with the 'app: nginx-api' label
+  ports:
+    - protocol: TCP
+      port: 80 # The port the Service exposes
+      targetPort: 80 # The port on the container where the Service routes traffic
+      nodePort: 30081 # Optional: A specific port on the Node (30000-32767 range). If omitted, Kubernetes assigns one.
